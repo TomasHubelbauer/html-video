@@ -1,0 +1,22 @@
+:root {
+  --scale: calc(1 / 2);
+  --width: 1920px;
+  --height: 1080px;
+}
+
+canvas, video {
+  height: calc(var(--height) * var(--scale));
+  width: calc(var(--width) * var(--scale));
+}
+
+video:not([src]) {
+  display: none;
+}
+
+a {
+  display: block;
+}
+
+a:not([href]) {
+  display: none;
+}
