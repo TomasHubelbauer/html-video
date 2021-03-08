@@ -1,8 +1,9 @@
 import stamp from './stamp.js';
-import stamps from './stamps.js';
+import stamps from './scripts/stamps.js';
+import ball from './scripts/ball.js';
 
 window.addEventListener('load', () => {
-  const scripts = [stamps];
+  const scripts = [stamps, ball];
 
   const div = document.getElementById('div');
   for (const script of scripts) {
@@ -57,7 +58,13 @@ window.addEventListener('load', () => {
 
     const now = window.performance.now();
     window.requestAnimationFrame(function render(time) {
-      if (script(context, time - now)) {
+      const width = context.canvas.width;
+      const height = context.canvas.height;
+
+      context.fillStyle = 'white';
+      context.fillRect(0, 0, width, height);
+
+      if (script(context, width, height, time - now)) {
         window.requestAnimationFrame(render);
       }
       else {
