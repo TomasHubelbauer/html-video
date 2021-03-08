@@ -6,7 +6,7 @@
 
 ### See if there is an alternative to `createWriter` to use instead of memory cache
 
-https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/create Writer
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWriter
 
 ### Research the ability to upload the data as they are received to an endpoint
 
