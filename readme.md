@@ -8,6 +8,15 @@
 
 https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWriter
 
+Looks like that is obsolete, probably in favor of:
+
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createwritable
+
+The file handle here can be obtained by calling `showOpenFilePicker`.
+
+This however does not seem to be well supported. It looks like there is no good way
+to save to a file while generating the video data.
+
 ### Research the ability to upload the data to an endpoint in chunks
 
 https://web.dev/fetch-upload-streaming
