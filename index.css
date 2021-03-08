@@ -5,18 +5,15 @@
 }
 
 canvas, video {
+  display: block;
   height: calc(var(--height) * var(--scale));
   width: calc(var(--width) * var(--scale));
 }
 
-video:not([src]) {
+canvas.done {
   display: none;
 }
 
-a {
-  display: block;
-}
-
-a:not([href]) {
+video:not([src]) {
   display: none;
 }
