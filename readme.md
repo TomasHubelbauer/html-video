@@ -8,7 +8,9 @@
 
 https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWriter
 
-### Research the ability to upload the data as they are received to an endpoint
+### Research the ability to upload the data to an endpoint in chunks
 
-Not sure if the Request instance can keep the connection open and accept writes thru
-the push model.
+https://web.dev/fetch-upload-streaming
+
+Looks like this is in the works but the support isn't there yet.
+Alternatives I've found include API aware of chunks, similar to Range header.
