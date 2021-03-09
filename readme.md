@@ -29,3 +29,6 @@ Alternatives I've found include API aware of chunks, similar to Range header.
 Eventually I'll want to add the option to repeat the recording and for that
 revoking the URL is a must to avoid memory leaks.
 
+### Add a `svg-screencast` backend to generate animated SVGs over the WebMs
+
+https://github.com/tomashubelbauer/svg-screencast
