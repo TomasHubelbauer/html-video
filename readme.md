@@ -17,6 +17,9 @@ The file handle here can be obtained by calling `showOpenFilePicker`.
 This however does not seem to be well supported. It looks like there is no good way
 to save to a file while generating the video data.
 
+See:
+https://twitter.com/carbon_noreply/status/1585550790231412736/photo/1
+
 ### Research the ability to upload the data to an endpoint in chunks
 
 https://web.dev/fetch-upload-streaming
