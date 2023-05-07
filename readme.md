@@ -1,6 +1,12 @@
 # HTML Video
 
-`python3 -m http.server` and go to http://localhost:8000
+This repository hosts a small web app showing how to use the `MediaRecorder` API
+to make a video in plain JavaScript in the browser and offer the video up for
+download as a WEBM file.
+
+## Running
+
+Open `index.html`.
 
 ## To-Do
 

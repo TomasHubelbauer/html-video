@@ -1,4 +1,6 @@
-export default function ball(/** @type {CanvasRenderingContext2D} */ context, /** @type {number} */ width, /** @type {number} */ height, /** @type {number} */ time) {
+export default function ball(/** @type {CanvasRenderingContext2D} */ context, /** @type {number} */ time) {
+  const width = context.canvas.width;
+  const height = context.canvas.height;
   const duration = 20_000;
   const size = 100;
   const bounce = 1 - (time / (duration * 1.1));

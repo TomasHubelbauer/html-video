@@ -1,111 +1,91 @@
 import stamp from './stamp.js';
-import stamps from './scripts/stamps.js';
-import ball from './scripts/ball.js';
 
-window.addEventListener('load', () => {
-  const scripts = [stamps, ball];
+const div = document.querySelector('div');
+const canvas = document.querySelector('canvas');
+const video = document.querySelector('video');
+const a = document.querySelector('a');
 
-  const div = document.getElementById('div');
-  for (const script of scripts) {
-    const button = document.createElement('button');
-    button.textContent = script.name;
-    button.addEventListener('click', handleButtonClick);
-    div.append(button);
-  }
+// See `index.css` for the initial values (1080p)
+const width = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--width'));
+const height = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--height'));
+canvas.width = width;
+canvas.height = height;
 
-  /** @type {HTMLCanvasElement} */
-  const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
 
-  // See `index.css` for the initial values (1080p)
-  canvas.width = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--width'));
-  canvas.height = parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('--height'));
+const scripts = [await import('./scripts/stamps.js'), await import('./scripts/ball.js')];
+for (const { default: script } of scripts) {
+  const button = document.createElement('button');
+  button.textContent = script.name;
+  button.addEventListener('click', () => {
+    // Disable all buttons while the video is rendering
+    document.querySelectorAll('button').forEach(button => button.disabled = true);
 
-  /** @type {HTMLVideoElement} */
-  const video = document.getElementById('video');
+    // Set the `canvas` to be visible to show the rendering progress
+    canvas.classList.remove('done');
 
-  /** @type {MediaStream} */
-  let mediaStream;
-
-  /** @type {Blob[]} */
-  let blobs;
-
-  /** @type {HTMLAnchorElement} */
-  let a;
-
-  function handleButtonClick(/** @type {Event} */ event) {
-    /** @type {HTMLButtonElement} */
-    const button = event.currentTarget;
-    const name = button.textContent;
-    const script = scripts.find(script => script.name === name);
-
-    /** @type {HTMLButtonElement[]} */
-    const buttons = Array.from(div.children);
-    buttons.forEach((/** @type {HTMLButtonElement} */ button) => button.disabled = true);
-
-    canvas.removeAttribute('class');
+    // Release the video rendering URL if there was one and reset the `video`
     URL.revokeObjectURL(video.src);
+
+    // Clear the `video[src]` to make the `video` disappear using CSS
     video.removeAttribute('src');
-    a?.remove();
 
-    const context = canvas.getContext('2d');
-    mediaStream = canvas.captureStream();
-    blobs = [];
+    /** @type {Blob[]} */
+    const blobs = [];
 
+    const mediaStream = canvas.captureStream();
     const mediaRecorder = new MediaRecorder(mediaStream);
-    mediaRecorder.addEventListener('dataavailable', handleMediaRecorderDataAvailable);
-    mediaRecorder.addEventListener('stop', handleMediaRecorderStop);
+    mediaRecorder.addEventListener('dataavailable', event => blobs.push(event.data));
+    mediaRecorder.addEventListener('stop', () => {
+      mediaStream.getTracks().forEach(track => track.stop());
+
+      const types = blobs.map(blob => blob.type).filter((type, index, types) => types.indexOf(type) === index);
+      if (types.length !== 1) {
+        throw new Error(`All blobs do not share the same type: ${types.join(', ')}.`);
+      }
+
+      const [type] = types;
+      const blob = new Blob(blobs, { type });
+      const url = URL.createObjectURL(blob);
+      video.src = url;
+
+      let size = blob.size;
+      let unit = 0;
+      while (size > 1024) {
+        size /= 1024;
+        unit++;
+      }
+
+      a.href = url;
+      a.textContent = `Download (${size.toFixed(2)} ${['b', 'kB', 'MB'][unit]})`;
+      a.addEventListener('click', event => {
+        const name = prompt('.webm', stamp());
+        if (!name) {
+          event.preventDefault();
+          return;
+        }
+
+        a.download = name + '.webm'
+      });
+    });
+
     mediaRecorder.start();
 
-    const now = window.performance.now();
-    window.requestAnimationFrame(function render(time) {
-      const width = context.canvas.width;
-      const height = context.canvas.height;
-
+    const now = performance.now();
+    requestAnimationFrame(function render(time) {
+      requestAnimationFrame(render);
       context.fillStyle = 'white';
       context.fillRect(0, 0, width, height);
 
-      if (script(context, width, height, time - now)) {
-        window.requestAnimationFrame(render);
-      }
-      else {
-        canvas.className = 'done';
+      if (!script(context, time - now)) {
+        canvas.classList.add('done');
         mediaRecorder.stop();
-        buttons.forEach((/** @type {HTMLButtonElement} */ button) => button.disabled = false);
+
+        // Re-enable all buttons after the video is done rendering
+        document.querySelectorAll('button').forEach(button => button.disabled = false);
       }
     });
-  }
+  });
 
-  function handleMediaRecorderDataAvailable(/** @type {Event} */ event) {
-    blobs.push(event.data)
-  }
-
-  function handleMediaRecorderStop() {
-    mediaStream.getTracks().forEach(track => track.stop());
-    mediaStream = undefined;
-
-    const types = blobs.map(blob => blob.type).filter((type, index, types) => types.indexOf(type) === index);
-    if (types.length !== 1) {
-      throw new Error(`All blobs do not share the same type: ${types.join(', ')}.`);
-    }
-
-    const [type] = types;
-    const blob = new Blob(blobs, { type });
-    blobs = undefined;
-
-    const url = URL.createObjectURL(blob);
-    video.src = url;
-
-    let size = blob.size;
-    let unit = 0;
-    while (size > 1024) {
-      size /= 1024;
-      unit++;
-    }
-
-    a = document.createElement('a');
-    a.href = url;
-    a.textContent = `Download (${size.toFixed(2)} ${['b', 'kB', 'MB'][unit]})`;
-    a.addEventListener('click', () => a.download = prompt('.webm', stamp()) + '.webm');
-    document.body.append(a);
-  }
-});
+  div.append(button);
+}
