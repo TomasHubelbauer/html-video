@@ -12,12 +12,13 @@ canvas.width = width;
 canvas.height = height;
 
 const context = canvas.getContext('2d');
+const title = document.title;
 
 const scripts = [await import('./scripts/stamps.js'), await import('./scripts/ball.js')];
 for (const { default: script } of scripts) {
   const button = document.createElement('button');
   button.textContent = script.name;
-  button.addEventListener('click', () => {
+  button.addEventListener('click', async () => {
     // Disable all buttons while the video is rendering
     document.querySelectorAll('button').forEach(button => button.disabled = true);
 
@@ -71,20 +72,16 @@ for (const { default: script } of scripts) {
 
     mediaRecorder.start();
 
-    const now = performance.now();
-    requestAnimationFrame(function render(time) {
-      requestAnimationFrame(render);
-      context.fillStyle = 'white';
-      context.fillRect(0, 0, width, height);
+    for await (const frame of script(context)) {
+      document.title = `${title} ${frame}`;
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
 
-      if (!script(context, time - now)) {
-        canvas.classList.add('done');
-        mediaRecorder.stop();
+    canvas.classList.add('done');
+    mediaRecorder.stop();
 
-        // Re-enable all buttons after the video is done rendering
-        document.querySelectorAll('button').forEach(button => button.disabled = false);
-      }
-    });
+    // Re-enable all buttons after the video is done rendering
+    document.querySelectorAll('button').forEach(button => button.disabled = false);
   });
 
   div.append(button);

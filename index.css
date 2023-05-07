@@ -4,7 +4,8 @@
   --height: 1080px;
 }
 
-canvas, video {
+canvas,
+video {
   display: block;
   height: calc(var(--height) * var(--scale));
   width: calc(var(--width) * var(--scale));
