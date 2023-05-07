@@ -15,23 +15,18 @@ Open `index.html`.
 No other video types other than WEBM are supported on Firefox as of writing:
 https://stackoverflow.com/a/68236494/2715716
 
+### Saving to the file system
+
+Firefox doesn't support `showOpenFilePicker`:
+https://developer.mozilla.org/en-US/docs/Web/API/Window/showOpenFilePicker#browser_compatibility
+
+This is needed for `createWritable` which is a replacement for the deprecated
+and non-standard `createWriter`.
+
+Until Firefox ships these APIs I have nothing to do here, but if Mozilla ever
+does, I will implement saving directly to the file system handle.
+
 ## To-Do
-
-### See if there is an alternative to `createWriter` to use instead of memory cache
-
-https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWriter
-
-Looks like that is obsolete, probably in favor of:
-
-https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createwritable
-
-The file handle here can be obtained by calling `showOpenFilePicker`.
-
-This however does not seem to be well supported. It looks like there is no good way
-to save to a file while generating the video data.
-
-See:
-https://twitter.com/carbon_noreply/status/1585550790231412736/photo/1
 
 ### Research the ability to upload the data to an endpoint in chunks
 
