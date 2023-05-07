@@ -79,6 +79,7 @@ for (const { default: script } of scripts) {
 
     canvas.classList.add('done');
     mediaRecorder.stop();
+    document.title = title;
 
     // Re-enable all buttons after the video is done rendering
     document.querySelectorAll('button').forEach(button => button.disabled = false);
