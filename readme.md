@@ -8,6 +8,13 @@ download as a WEBM file.
 
 Open `index.html`.
 
+## Notes
+
+### WEBM and other video types
+
+No other video types other than WEBM are supported on Firefox as of writing:
+https://stackoverflow.com/a/68236494/2715716
+
 ## To-Do
 
 ### See if there is an alternative to `createWriter` to use instead of memory cache
